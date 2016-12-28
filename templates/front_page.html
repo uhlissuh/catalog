@@ -1,1 +1,11 @@
-hi world
+<html>
+<head>
+  <title>Catalog</title>
+</head>
+<body>
+  <h1>Catalog</h1>
+  {% block body %}
+    <a href="{{url_for('newItem')}}">New Item</a>
+  {% endblock %}
+</body>
+</html>
