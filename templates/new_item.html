@@ -1,13 +1,20 @@
 {% extends "front_page.html" %}
- {% block body %}
- <form action="{{url_for('newItem')}}" method = 'POST'>
-   <label for="item-name">Item Name:</label>
-   <input type='text' name='name' id="item-name"/>
-   <input type='submit' value='Create'>
- </form>
- {% endblock %}
-
-
-
- <label for="username">Click me</label>
- <input type="text" id="username">
+{% block body %}
+<form action="{{url_for('newItem')}}" method = 'POST'>
+  <label for="item-name">Item Name:</label>
+  <input type='text' name='name' id="item-name"/>
+  <label for="item-description">Description:</label>
+  <input type='text' name='item-description' id="item-description"/>
+  <select name="category">
+    <option value="snowboarding">Snowboarding</option>
+    <option value="soccer">Soccer</option>
+    <option value="baseball">Baseball</option>
+    <option value="frisbee">Frisbee</option>
+    <option value="rock climbing">Rock Climbing</option>
+    <option value="foosball">Foosball</option>
+    <option value="skating">Skating</option>
+    <option value="hockey">Hockey</option>
+  </select>
+  <input type='submit' value='Create'>
+</form>
+{% endblock %}
