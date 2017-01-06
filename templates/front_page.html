@@ -4,16 +4,25 @@
 </head>
 <body>
   <h1>Catalog</h1>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li><strong>{{message}}</strong></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  {% endwith %}
   {% block body %}
     <a href="{{url_for('newItem')}}">New Item</a>
-    <a href="">Soccer</a>
-    <a href="">Snowboarding</a>
-    <a href="">Baseball</a>
-    <a href="">Hockey</a>
-    <a href="">Frisbee</a>
-    <a href="">Rockclimbing</a>
-    <a href="">Foosball</a>
-    <a href="">Skating</a>
+    <a href="{{url_for('CategoryPage', category_name ='Soccer')}}">Soccer</a>
+    <a href="{{url_for('CategoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
+    <a href="{{url_for('CategoryPage', category_name ='Baseball')}}">Baseball</a>
+    <a href="{{url_for('CategoryPage', category_name ='Hockey')}}">Hockey</a>
+    <a href="{{url_for('CategoryPage', category_name ='Frisbee')}}">Frisbee</a>
+    <a href="{{url_for('CategoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
+    <a href="{{url_for('CategoryPage', category_name ='Foosball')}}">Foosball</a>
+    <a href="{{url_for('CategoryPage', category_name ='Skating')}}">Skating</a>
   {% endblock %}
 </body>
 </html>

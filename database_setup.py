@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 class Item(Base):
-    __tablename__ = 'item'
+    __tablename__ = 'items'
     name = Column(String(80), nullable = False)
     id =  Column(Integer, primary_key = True)
     description = Column(String(250))

@@ -37,11 +37,18 @@ def newItem():
         return render_template('new_item.html')
     if request.method == 'POST':
         newItem = Item(name = request.form['name'], description = request.form['item-description'], category = request.form['category'])
-        print newItem
         session.add(newItem)
         session.commit()
-        print "new item made"
+        print "new item made", newItem
         return redirect(url_for('FrontPage'))
+
+#routes for all the categories
+@app.route('/<category_name>')
+def CategoryPage(category_name):
+    category_name = str(category_name)
+    category_items = session.query(Item).filter_by(category = category_name).all()
+    print "items are", category_items
+    return render_template('category_page.html', category_name=category_name, category_items = category_items)
 
 #login
 @app.route('/login')
