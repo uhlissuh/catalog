@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 app = Flask(__name__)
 
-from database_setup import Base, Item
+from database_setup import Base, Item, User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 #import the session feature of flask as login_session
@@ -29,7 +29,9 @@ APPLICATION_NAME = "Restaurant Menu Application"
 
 @app.route('/')
 def FrontPage():
-    return render_template('front_page.html')
+    latest_items = session.query(Item).order_by(Item.time_created.desc()).limit(5)
+    print latest_items
+    return render_template('front_page.html', latest_items = latest_items)
 
 @app.route('/item/new', methods=['GET', 'POST'])
 def newItem():
@@ -49,6 +51,15 @@ def CategoryPage(category_name):
     category_items = session.query(Item).filter_by(category = category_name).all()
     print "items are", category_items
     return render_template('category_page.html', category_name=category_name, category_items = category_items)
+
+#routes for items
+@app.route('/<category>/<item_id>')
+def ItemPage(category, item_id):
+    item = session.query(Item).filter_by(id = item_id).first()
+
+    return render_template('item_page.html', category = category, item_id = item_id)
+
+
 
 #login
 @app.route('/login')

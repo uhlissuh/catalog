@@ -5,9 +5,7 @@
 
 {% for i in category_items %}
 
-<p>{{i.name}}</p>
-
-<p>{{i.description}}</p>
+<a href="{{url_for('ItemPage', category = category_name, item_id = i.id)}}">{{i.name}}</a>
 
 <br />
 
