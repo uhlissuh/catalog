@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, flash
 app = Flask(__name__)
 
 from database_setup import Base, Item, User
@@ -36,12 +36,13 @@ def FrontPage():
 @app.route('/item/new', methods=['GET', 'POST'])
 def newItem():
     if request.method == 'GET':
+        print login_session
         return render_template('new_item.html')
     if request.method == 'POST':
-        newItem = Item(name = request.form['name'], description = request.form['item-description'], category = request.form['category'])
+        newItem = Item(name = request.form['name'], description = request.form['item-description'], category = request.form['category'], user_id = login_session['user_id'])
         session.add(newItem)
         session.commit()
-        print "new item made", newItem
+        flash('new item created!')
         return redirect(url_for('FrontPage'))
 
 #routes for all the categories
@@ -59,6 +60,11 @@ def ItemPage(category, item_id):
 
     return render_template('item_page.html', category = category, item_id = item_id)
 
+#edit and delete items
+@app.route('/<category>/<item_id>/edit')
+def editItem(category, item_id):
+    if request.method == 'GET':
+        return render_template('edit_item.html')
 
 
 #login
@@ -142,6 +148,14 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    #see if user exists or create user in local permission
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+
+    login_session['user_id'] = user_id
+
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -153,10 +167,54 @@ def gconnect():
     print "done!"
     return output
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    access_token = login_session['access_token']
+    print 'In gdisconnect access token is %s', access_token
+    print 'User name is: '
+    print login_session['username']
+    if access_token is None:
+ 	print 'Access Token is None'
+    	response = make_response(json.dumps('Current user not connected.'), 401)
+    	response.headers['Content-Type'] = 'application/json'
+    	return response
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print 'result is '
+    print result
+    if result['status'] == '200':
+	del login_session['access_token']
+    	# del login_session['gplus_id']
+    	del login_session['username']
+    	del login_session['email']
+    	response = make_response(json.dumps('Successfully disconnected.'), 200)
+    	response.headers['Content-Type'] = 'application/json'
+    	return response
+    else:
+    	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+    	response.headers['Content-Type'] = 'application/json'
+    	return response
 
 
+#local permission system helper functions
+def createUser(login_session):
+    newUser = User(name = login_session['username'], email = login_session['email'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email = login_session['email']).one()
+    return user.id
 
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
 
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 
 
