@@ -1,5 +1,17 @@
-{{item_id}}
+{% extends "front_page.html" %}
 
-category = {{category}}
+<head>
+  <title>{% block title %}{{item.name}}{% endblock %}</title>
+</head>
+<body>
+  {% block body %}
+  <h1>{{item.name}}</h1>
 
-<a href="{{url_for('editItem', category = category, item_id = item_id)}}">Edit</a>
+
+  <a href="{{url_for('editItem', category = category, item_id = item.id)}}">Edit</a>
+
+  <br />
+  {{item.description}}
+  <br />
+  {% endblock %}
+</body>

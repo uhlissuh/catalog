@@ -1,14 +1,19 @@
 {% extends "front_page.html" %}
+<head>
+  <title>{% block title %}{{category_name}} Items{% endblock %}</title>
+</head>
+<body>
+  {% block body %}
+  <h3>{{category_name}} Items</h3>
 
-{% block body %}
-<h3>{{category_name}} Items</h3>
+  {% for i in category_items %}
 
-{% for i in category_items %}
+  <a href="{{url_for('itemPage', category = category_name, item_id = i.id)}}">{{i.name}}</a>
 
-<a href="{{url_for('ItemPage', category = category_name, item_id = i.id)}}">{{i.name}}</a>
+  <br />
 
-<br />
+  {% endfor %}
 
-{% endfor %}
+  {% endblock %}
 
-{% endblock %}
+</body>

@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Catalog</title>
+  <title>{% block title %}Catalog{% endblock %}</title>
 </head>
 <body>
   <h1>Catalog</h1>
@@ -13,16 +13,18 @@
     </ul>
     {% endif %}
   {% endwith %}
-  {% block body %}
+
   <a href="{{url_for('newItem')}}">New Item</a>
-  <a href="{{url_for('CategoryPage', category_name ='Soccer')}}">Soccer</a>
-  <a href="{{url_for('CategoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
-  <a href="{{url_for('CategoryPage', category_name ='Baseball')}}">Baseball</a>
-  <a href="{{url_for('CategoryPage', category_name ='Hockey')}}">Hockey</a>
-  <a href="{{url_for('CategoryPage', category_name ='Frisbee')}}">Frisbee</a>
-  <a href="{{url_for('CategoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
-  <a href="{{url_for('CategoryPage', category_name ='Foosball')}}">Foosball</a>
-  <a href="{{url_for('CategoryPage', category_name ='Skating')}}">Skating</a>
+  <a href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
+  <a href="{{url_for('categoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
+  <a href="{{url_for('categoryPage', category_name ='Baseball')}}">Baseball</a>
+  <a href="{{url_for('categoryPage', category_name ='Hockey')}}">Hockey</a>
+  <a href="{{url_for('categoryPage', category_name ='Frisbee')}}">Frisbee</a>
+  <a href="{{url_for('categoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
+  <a href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
+  <a href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
+
+  {% block body %}
 
   <h2>Latest Items</h2>
   {% for item in latest_items %}

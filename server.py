@@ -28,7 +28,7 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Restaurant Menu Application"
 
 @app.route('/')
-def FrontPage():
+def frontPage():
     latest_items = session.query(Item).order_by(Item.time_created.desc()).limit(5)
     print latest_items
     return render_template('front_page.html', latest_items = latest_items)
@@ -43,11 +43,11 @@ def newItem():
         session.add(newItem)
         session.commit()
         flash('new item created!')
-        return redirect(url_for('FrontPage'))
+        return redirect(url_for('frontPage'))
 
 #routes for all the categories
 @app.route('/<category_name>')
-def CategoryPage(category_name):
+def categoryPage(category_name):
     category_name = str(category_name)
     category_items = session.query(Item).filter_by(category = category_name).all()
     print "items are", category_items
@@ -55,17 +55,23 @@ def CategoryPage(category_name):
 
 #routes for items
 @app.route('/<category>/<item_id>')
-def ItemPage(category, item_id):
+def itemPage(category, item_id):
     item = session.query(Item).filter_by(id = item_id).first()
 
-    return render_template('item_page.html', category = category, item_id = item_id)
+    return render_template('item_page.html', category = category, item = item)
 
 #edit and delete items
 @app.route('/<category>/<item_id>/edit')
 def editItem(category, item_id):
     if request.method == 'GET':
-        return render_template('edit_item.html')
-
+        return render_template('edit_item.html', category = category, item_id = item_id)
+    if request.method == 'POST':
+        item = session.query(Item).filter_by(id = item_id).first()
+        item.name = request.form['name']
+        item.description = request.form['description']
+        item.category = request.form['category']
+        session.commit()
+        return redirect(url_for('itemPage', item_id = item_id))
 
 #login
 @app.route('/login')
