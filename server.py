@@ -8,6 +8,15 @@ from sqlalchemy.orm import sessionmaker
 from flask import session as login_session
 import random, string
 
+#stuff for oauth third party authentication
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+from flask_login import LoginManager, login_user, login_required
+import json
+from flask import make_response
+import requests
+
 
 #Connect to Database and create database session
 engine = create_engine('sqlite:///itemcatalog.db')
@@ -15,28 +24,29 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-#stuff for oauth third party authentication
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
-import httplib2
-import json
-from flask import make_response
-import requests
+#setting up flask-login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'showLogin'
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Restaurant Menu Application"
+APPLICATION_NAME = "Catalog Application"
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = session.query(User).filter_by(id = user_id).first()
+    return user
 
 @app.route('/')
 def frontPage():
     latest_items = session.query(Item).order_by(Item.time_created.desc()).limit(5)
-    print latest_items
     return render_template('front_page.html', latest_items = latest_items)
 
 @app.route('/item/new', methods=['GET', 'POST'])
+@login_required
 def newItem():
     if request.method == 'GET':
-        print login_session
         return render_template('new_item.html')
     if request.method == 'POST':
         newItem = Item(name = request.form['name'], description = request.form['item-description'], category = request.form['category'], user_id = login_session['user_id'])
@@ -50,7 +60,6 @@ def newItem():
 def categoryPage(category_name):
     category_name = str(category_name)
     category_items = session.query(Item).filter_by(category = category_name).all()
-    print "items are", category_items
     return render_template('category_page.html', category_name=category_name, category_items = category_items)
 
 #routes for items
@@ -61,17 +70,29 @@ def itemPage(category, item_id):
     return render_template('item_page.html', category = category, item = item)
 
 #edit and delete items
-@app.route('/<category>/<item_id>/edit')
+@app.route('/<category>/<item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def editItem(category, item_id):
     if request.method == 'GET':
         return render_template('edit_item.html', category = category, item_id = item_id)
     if request.method == 'POST':
         item = session.query(Item).filter_by(id = item_id).first()
         item.name = request.form['name']
-        item.description = request.form['description']
+        item.description = request.form['item-description']
         item.category = request.form['category']
         session.commit()
-        return redirect(url_for('itemPage', item_id = item_id))
+        return redirect(url_for('itemPage', category = category, item_id = item_id))
+
+
+@app.route('/<category>/<item_id>/delete', methods=['GET', 'POST'])
+@login_required
+def deleteItem(category, item_id):
+    item = session.query(Item).filter_by(id = item_id).first()
+    session.delete(item)
+    session.commit()
+    return redirect(url_for('frontPage'))
+
+
 
 #login
 @app.route('/login')
@@ -155,11 +176,15 @@ def gconnect():
     login_session['email'] = data['email']
 
     #see if user exists or create user in local permission
-    user_id = getUserID(login_session['email'])
-    if not user_id:
-        user_id = createUser(login_session)
+    user = getUser(login_session['email'])
+    if not user:
+        user = createUser(login_session)
 
-    login_session['user_id'] = user_id
+    login_session['user_id'] = user.id
+
+    #login user for flask-login
+    login_user(user)
+    # next = flask.request.args.get('next')
 
 
     output = ''
@@ -174,6 +199,7 @@ def gconnect():
     return output
 
 @app.route('/gdisconnect')
+@login_required
 def gdisconnect():
     access_token = login_session['access_token']
     print 'In gdisconnect access token is %s', access_token
@@ -209,16 +235,16 @@ def createUser(login_session):
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email = login_session['email']).one()
-    return user.id
+    return user
 
 def getUserInfo(user_id):
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
-def getUserID(email):
+def getUser(email):
     try:
         user = session.query(User).filter_by(email=email).one()
-        return user.id
+        return user
     except:
         return None
 

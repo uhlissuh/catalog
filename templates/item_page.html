@@ -7,8 +7,12 @@
   {% block body %}
   <h1>{{item.name}}</h1>
 
-
+  {% if current_user.id == item.user_id  %}
   <a href="{{url_for('editItem', category = category, item_id = item.id)}}">Edit</a>
+  <form method="POST" action="{{url_for('deleteItem', category = category, item_id = item.id)}}">
+    <input type="submit" value="delete"/>
+  </form>
+  {% endif %}
 
   <br />
   {{item.description}}

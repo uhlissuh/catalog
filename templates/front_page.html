@@ -1,9 +1,18 @@
 <html>
 <head>
   <title>{% block title %}Catalog{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css" media="screen" />
 </head>
 <body>
-  <h1>Catalog</h1>
+  <h1 class="main-title">Catalog</h1>
+
+  {% if current_user.is_authenticated %}
+  <div>
+    {{current_user.name}}
+  </div>
+  <a href="{{url_for('gdisconnect')}}">logout</a>
+  {% endif %}
+
   {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul>
@@ -13,6 +22,12 @@
     </ul>
     {% endif %}
   {% endwith %}
+
+  <!-- {% if not session.logged_in %}
+    <a href="{{url_for('showLogin')}}">log in</a>
+  {% else %}
+    <a href="{{ url_for('logout') }}">log out</a> -->
+  <!-- {% endif %} -->
 
   <a href="{{url_for('newItem')}}">New Item</a>
   <a href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
@@ -24,8 +39,8 @@
   <a href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
   <a href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
 
-  {% block body %}
 
+  {% block body %}
   <h2>Latest Items</h2>
   {% for item in latest_items %}
     <h4>{{item.name}}</h4>

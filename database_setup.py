@@ -14,6 +14,23 @@ class User(Base):
     id =  Column(Integer, primary_key = True)
     email = Column(String(250), nullable = False)
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return True
+
+    def get_id(self):
+        return unicode(self.id)
+
+
+
 class Item(Base):
     __tablename__ = 'items'
     name = Column(String(80), nullable = False)
