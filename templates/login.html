@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Login</title>
+  <title>{% block title %}Login{% endblock %}</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
   <script src="//apis.google.com/js/platform.js?onload=start"> </script>
 </head>
@@ -9,37 +9,34 @@
     <span class="g-signin"
       data-scope="openid email"
       data-clientid="445948549050-q76tl4p34i1g2jqvo23ut2r4n8hs5s8c.apps.googleusercontent.com"
-      data-redirecturi="postmessage"
       data-accesstype="offline"
       data-cookiepolicy="single_host_origin"
-      data-callback="signInCallback"
-      data-approvalprompt="force">
+      data-approvalprompt="force"
+      data-callback="loginSucceeded"
+      >
     </span>
   </div>
-  <div id="result"></div>
+
   <script>
-  function signInCallback(authResult) {
-    if (authResult['code']) {
-      $('#signinButton').attr('style', 'display: none');
+  function loginSucceeded(authResult) {
+    if (authResult['error']) {
+      console.log('There was an error: ' + authResult['error']);
+    } else {
       $.ajax({
         type: 'POST',
-        url: '/gconnect?state={{STATE}}',
-        processData: false,
-        data: authResult['code'],
-        contentType: 'application/octet-stream; charset=utf-8',
-        success: function(result) {
-          if (result) {
-            $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
-            setTimeout(function() {
-              window.location.href = "/";
-            }, 4000);
-          } else if (authResult['error']) {
-            console.log('There was an error: ' + authResult['error']);
-          } else {
-            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+          url: '/gconnect?state={{STATE}}',
+          processData: false,
+          data: authResult['code'],
+          contentType: 'application/octet-stream; charset=utf-8',
+          success: function() {
+              if ({{next}}) {
+                window.location.href = "{{next}}";
+              } else {
+                window.location.href = "/"
+              }
+
           }
-        }
-      });
+      })
     }
   }
   </script>

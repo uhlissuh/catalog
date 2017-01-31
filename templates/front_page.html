@@ -1,53 +1,58 @@
 <html>
 <head>
   <title>{% block title %}Catalog{% endblock %}</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/main.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/bootstrap-theme.css" media="screen" />
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .main-logo {
+      font-family: 'Lato', sans-serif;
+      font-size: 40px;
+      font-weight: bold;
+      text-decoration: none;
+      color: orange;
+    }
+  </style>
 </head>
 <body>
-  <h1 class="main-title">Catalog</h1>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand main-logo" href="{{url_for('frontPage')}}"><span>Sports n' Stuff</span></a>
 
-  {% if current_user.is_authenticated %}
-  <div>
-    {{current_user.name}}
-  </div>
-  <a href="{{url_for('gdisconnect')}}">logout</a>
-  {% endif %}
-
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-        <li><strong>{{message}}</strong></li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-  {% endwith %}
-
-  <!-- {% if not session.logged_in %}
-    <a href="{{url_for('showLogin')}}">log in</a>
-  {% else %}
-    <a href="{{ url_for('logout') }}">log out</a> -->
-  <!-- {% endif %} -->
-
-  <a href="{{url_for('newItem')}}">New Item</a>
-  <a href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
-  <a href="{{url_for('categoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
-  <a href="{{url_for('categoryPage', category_name ='Baseball')}}">Baseball</a>
-  <a href="{{url_for('categoryPage', category_name ='Hockey')}}">Hockey</a>
-  <a href="{{url_for('categoryPage', category_name ='Frisbee')}}">Frisbee</a>
-  <a href="{{url_for('categoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
-  <a href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
-  <a href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
+        <span class="navbar-text navbar-right">
+          {% if current_user.is_authenticated %}
+            {{current_user.name}}
+            <a href="{{url_for('gdisconnect')}}">logout</a>
+          {% endif %}
+        </span>
 
 
-  {% block body %}
-  <h2>Latest Items</h2>
-  {% for item in latest_items %}
-    <h4>{{item.name}}</h4>
-  {% endfor%}
+      <!-- {% if not session.logged_in %}
+        <a href="{{url_for('showLogin')}}">log in</a>
+      {% else %}
+        <a href="{{ url_for('logout') }}">log out</a> -->
+      <!-- {% endif %} -->
+      </div>
+    </div>
+  </nav>
+    <a href="{{url_for('newItem')}}">New Item</a>
+    <a href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
+    <a href="{{url_for('categoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
+    <a href="{{url_for('categoryPage', category_name ='Baseball')}}">Baseball</a>
+    <a href="{{url_for('categoryPage', category_name ='Hockey')}}">Hockey</a>
+    <a href="{{url_for('categoryPage', category_name ='Frisbee')}}">Frisbee</a>
+    <a href="{{url_for('categoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
+    <a href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
+    <a href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
 
-  {% endblock %}
+
+    {% block body %}
+    <h2>Latest Items</h2>
+    {% for item in latest_items %}
+      <h4>{{item.name}}</h4>
+    {% endfor%}
+
+    {% endblock %}
 </body>
 </html>

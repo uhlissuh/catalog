@@ -41,6 +41,18 @@ class Item(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship(User)
 
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'category': self.category,
+            'time_created': self.time_created
+            # 'user_id': user_id
+        }
+
+
 
 engine = create_engine('sqlite:///itemcatalog.db')
 Base.metadata.create_all(engine)
