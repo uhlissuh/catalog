@@ -13,7 +13,7 @@ import random, string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
-from flask_login import LoginManager, login_user, login_required
+from flask_login import LoginManager, login_user, login_required, logout_user
 import json
 from flask import make_response
 import requests
@@ -67,23 +67,27 @@ def categoryPage(category_name):
 @app.route('/<category>/<item_id>')
 def itemPage(category, item_id):
     item = session.query(Item).filter_by(id = item_id).first()
-
     return render_template('item_page.html', category = category, item = item)
 
 #edit and delete items
 @app.route('/<category>/<item_id>/edit', methods=['GET', 'POST'])
 @login_required
 def editItem(category, item_id):
-    if request.method == 'GET':
-        return render_template('edit_item.html', category = category, item_id = item_id)
-    if request.method == 'POST':
-        item = session.query(Item).filter_by(id = item_id).first()
-        item.name = request.form['name']
-        item.description = request.form['item-description']
-        item.category = request.form['category']
-        session.commit()
-        return redirect(url_for('itemPage', category = category, item_id = item_id))
-
+    item = session.query(Item).filter_by(id = item_id).first()
+    item_creator = item.user_id
+    item_name = item.name
+    item_description = item.description
+    if int(login_session['user_id']) == item_creator:
+        if request.method == 'GET':
+            return render_template('edit_item.html', category = category, item_id = item_id, item_name = item_name, item_description = item_description)
+        if request.method == 'POST':
+            item.name = request.form['name']
+            item.description = request.form['item-description']
+            item.category = request.form['category']
+            session.commit()
+            return redirect(url_for('itemPage', category = category, item_id = item_id))
+    else:
+        abort(401)
 
 @app.route('/<category>/<item_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -98,7 +102,8 @@ def deleteItem(category, item_id):
 #login
 @app.route('/login')
 def showLogin():
-    next = request.args.get('next')
+    next = request.referrer
+    print next
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('/login.html', STATE=state, next=next)
@@ -139,37 +144,41 @@ def gconnect():
     return "success!"
 
 
-
-
-
-
 @app.route('/gdisconnect')
 @login_required
 def gdisconnect():
-    access_token = login_session['access_token']
-    print login_session['username']
-    if access_token is None:
- 	print 'Access Token is None'
-    	response = make_response(json.dumps('Current user not connected.'), 401)
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
-    h = httplib2.Http()
-    result = h.request(url, 'GET')[0]
-    print 'result is '
-    print result
-    if result['status'] == '200':
-	del login_session['access_token']
-    	# del login_session['gplus_id']
-    	del login_session['username']
-    	del login_session['email']
-    	response = make_response(json.dumps('Successfully disconnected.'), 200)
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
+    if login_session['credentials']:
+        del login_session['credentials']
+        del login_session['user_id']
+        logout_user()
+        return redirect(url_for('frontPage'))
     else:
-    	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-    	response.headers['Content-Type'] = 'application/json'
-    	return response
+        return make_response(json.dumps('Current user not connected.'))
+
+    # access_token = login_session['access_token']
+    # print login_session['username']
+    # if access_token is None:
+ # 	print 'Access Token is None'
+    # 	response = make_response(json.dumps('Current user not connected.'), 401)
+    # 	response.headers['Content-Type'] = 'application/json'
+    # 	return response
+    # url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    # h = httplib2.Http()
+    # result = h.request(url, 'GET')[0]
+    # print 'result is '
+    # print result
+    # if result['status'] == '200':
+	# del login_session['access_token']
+    # 	# del login_session['gplus_id']
+    # 	del login_session['username']
+    # 	del login_session['email']
+    # 	response = make_response(json.dumps('Successfully disconnected.'), 200)
+    # 	response.headers['Content-Type'] = 'application/json'
+    # 	return response
+    # else:
+    # 	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+    # 	response.headers['Content-Type'] = 'application/json'
+    # 	return response
 
 #API endpoint
 @app.route('/<category>/<item_id>/JSON')

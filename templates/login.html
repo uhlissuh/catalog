@@ -29,12 +29,7 @@
           data: authResult['code'],
           contentType: 'application/octet-stream; charset=utf-8',
           success: function() {
-              if ({{next}}) {
-                window.location.href = "{{next}}";
-              } else {
-                window.location.href = "/"
-              }
-
+            window.location.href = "{{next}}";
           }
       })
     }

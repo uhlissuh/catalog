@@ -24,6 +24,8 @@
           {% if current_user.is_authenticated %}
             {{current_user.name}}
             <a href="{{url_for('gdisconnect')}}">logout</a>
+          {% else %}
+            <a href="{{url_for('showLogin')}}">login</a>
           {% endif %}
         </span>
 
