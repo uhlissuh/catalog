@@ -92,7 +92,8 @@
           {% block body %}
           <h3 class="subtitle">Latest Items</h3>
           {% for item in latest_items %}
-            <h4>{{item.name}}</h4>
+            <a href="{{url_for('itemPage', category = item.category, item_id = item.id)}}">{{item.name}} <i>({{item.category}})</i></a>
+            <br />
           {% endfor%}
 
           {% endblock %}

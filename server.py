@@ -25,7 +25,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-#setting up flask-login
+#setting up flask-login. This is a library that holds user authorization info in a session.
+#the main reason I use it is for the "login_required" decorator, which prevents users
+#who aren't logged in from seeing certain pages.
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'showLogin'
@@ -94,14 +96,18 @@ def editItem(category, item_id):
 def deleteItem(category, item_id):
     item = session.query(Item).filter_by(id = item_id).first()
     item_creator = item.user_id
-    if int(login_session['user_id']) == item_creator:
-        session.delete(item)
-        session.commit()
-        return redirect(url_for('frontPage'))
-    else:
-        abort(401)
-
-
+    if request.method == 'GET':
+        if int(login_session['user_id']) == item_creator:
+            return render_template("delete_item.html", category = category, item_id = item_id)
+        else:
+            abort(401)
+    if request.method =='POST':
+        if int(login_session['user_id']) == item_creator:
+            session.delete(item)
+            session.commit()
+            return redirect(url_for('frontPage'))
+        else:
+            abort(401)
 
 #login
 @app.route('/login')
@@ -158,31 +164,6 @@ def gdisconnect():
         return redirect(url_for('frontPage'))
     else:
         return make_response(json.dumps('Current user not connected.'))
-
-    # access_token = login_session['access_token']
-    # print login_session['username']
-    # if access_token is None:
- # 	print 'Access Token is None'
-    # 	response = make_response(json.dumps('Current user not connected.'), 401)
-    # 	response.headers['Content-Type'] = 'application/json'
-    # 	return response
-    # url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
-    # h = httplib2.Http()
-    # result = h.request(url, 'GET')[0]
-    # print 'result is '
-    # print result
-    # if result['status'] == '200':
-	# del login_session['access_token']
-    # 	# del login_session['gplus_id']
-    # 	del login_session['username']
-    # 	del login_session['email']
-    # 	response = make_response(json.dumps('Successfully disconnected.'), 200)
-    # 	response.headers['Content-Type'] = 'application/json'
-    # 	return response
-    # else:
-    # 	response = make_response(json.dumps('Failed to revoke token for given user.', 400))
-    # 	response.headers['Content-Type'] = 'application/json'
-    # 	return response
 
 #API endpoint
 @app.route('/<category>/<item_id>/JSON')

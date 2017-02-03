@@ -10,16 +10,17 @@
   {% block body %}
   <h3 class="item-title">{{item.name}}</h3>
 
-  {% if current_user.id == item.user_id  %}
-  <a href="{{url_for('editItem', category = category, item_id = item.id)}}">Edit</a>
-  <form method="POST" action="{{url_for('deleteItem', category = category, item_id = item.id)}}">
-    <input type="submit" value="delete"/>
-  </form>
-  {% endif %}
-
   <br />
   {{item.description}}
   <br />
+  <br />
+
+  {% if current_user.id == item.user_id  %}
+  <a href="{{url_for('editItem', category = category, item_id = item.id)}}">Edit</a>
+  <br />
+  <a href="{{url_for('deleteItem', category = category, item_id = item.id)}}">Delete</a>
+  {% endif %}
+
   {% endblock %}
 </body>
 </html>
