@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>{% block title %}Catalog{% endblock %}</title>
-  <link rel="stylesheet" type="text/css" href="/static/bootstrap-theme.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/bootstrap.css" media="screen" />
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
@@ -12,49 +12,94 @@
       text-decoration: none;
       color: orange;
     }
+    .login {
+      padding-right: 15px;
+    }
+    .subtitle {
+      font-family: 'Lato', sans-serif;
+      color: orange;
+    }
+    .item-title {
+      font-family: 'Lato', sans-serif;
+      color: darkgreen;
+    }
+    .navbar .username {
+      color: skyblue;
+    }
+
+
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand main-logo" href="{{url_for('frontPage')}}"><span>Sports n' Stuff</span></a>
-
-        <span class="navbar-text navbar-right">
-          {% if current_user.is_authenticated %}
-            {{current_user.name}}
+  <div class="container">
+  <nav class="navbar navbar-default">
+      <a class="navbar-brand main-logo" href="{{url_for('frontPage')}}"><span>Sports n' Stuff</span></a>
+      <ul class="nav navbar-nav">
+        <li>
+          <a href="{{url_for('newItem')}}">Add Item +</a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right login">
+        {% if current_user.is_authenticated %}
+          <li>
+            <p class="navbar-text username">{{current_user.name}}</p>
+          </li>
+          <li>
             <a href="{{url_for('gdisconnect')}}">logout</a>
-          {% else %}
+          </li>
+        {% else %}
+          <li>
             <a href="{{url_for('showLogin')}}">login</a>
-          {% endif %}
-        </span>
+          </li>
+        {% endif %}
+      </ul>
+  </nav>
 
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="row">
+            <div class="col-md-12">
+              <h3 class="subtitle">Categories</h3>
+            </div>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Baseball')}}">Baseball</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Hockey')}}">Hockey</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Frisbee')}}">Frisbee</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
+          </div>
+          <div class="row">
+            <a class="col-md-12" href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
+          </div>
+        </div>
+        <div class="col-md-8">
+          {% block body %}
+          <h3 class="subtitle">Latest Items</h3>
+          {% for item in latest_items %}
+            <h4>{{item.name}}</h4>
+          {% endfor%}
 
-      <!-- {% if not session.logged_in %}
-        <a href="{{url_for('showLogin')}}">log in</a>
-      {% else %}
-        <a href="{{ url_for('logout') }}">log out</a> -->
-      <!-- {% endif %} -->
+          {% endblock %}
+        </div>
       </div>
     </div>
-  </nav>
-    <a href="{{url_for('newItem')}}">New Item</a>
-    <a href="{{url_for('categoryPage', category_name ='Soccer')}}">Soccer</a>
-    <a href="{{url_for('categoryPage', category_name ='Snowboarding')}}">Snowboarding</a>
-    <a href="{{url_for('categoryPage', category_name ='Baseball')}}">Baseball</a>
-    <a href="{{url_for('categoryPage', category_name ='Hockey')}}">Hockey</a>
-    <a href="{{url_for('categoryPage', category_name ='Frisbee')}}">Frisbee</a>
-    <a href="{{url_for('categoryPage', category_name ='Rockclimbing')}}">Rockclimbing</a>
-    <a href="{{url_for('categoryPage', category_name ='Foosball')}}">Foosball</a>
-    <a href="{{url_for('categoryPage', category_name ='Skating')}}">Skating</a>
 
-
-    {% block body %}
-    <h2>Latest Items</h2>
-    {% for item in latest_items %}
-      <h4>{{item.name}}</h4>
-    {% endfor%}
-
-    {% endblock %}
+  </div>
 </body>
 </html>

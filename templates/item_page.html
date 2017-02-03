@@ -1,11 +1,14 @@
+<html>
 {% extends "front_page.html" %}
-
 <head>
   <title>{% block title %}{{item.name}}{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="/static/bootstrap.css" media="screen" />
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
   {% block body %}
-  <h1>{{item.name}}</h1>
+  <h3 class="item-title">{{item.name}}</h3>
 
   {% if current_user.id == item.user_id  %}
   <a href="{{url_for('editItem', category = category, item_id = item.id)}}">Edit</a>
@@ -19,3 +22,4 @@
   <br />
   {% endblock %}
 </body>
+</html>

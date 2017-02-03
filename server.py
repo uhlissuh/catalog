@@ -93,9 +93,13 @@ def editItem(category, item_id):
 @login_required
 def deleteItem(category, item_id):
     item = session.query(Item).filter_by(id = item_id).first()
-    session.delete(item)
-    session.commit()
-    return redirect(url_for('frontPage'))
+    item_creator = item.user_id
+    if int(login_session['user_id']) == item_creator:
+        session.delete(item)
+        session.commit()
+        return redirect(url_for('frontPage'))
+    else:
+        abort(401)
 
 
 
