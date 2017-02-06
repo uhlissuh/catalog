@@ -173,7 +173,7 @@ def itemJSON(category, item_id):
 
 #local permission system helper functions
 def createUser(data):
-    newUser = User(name = data['username'], email = data['email'])
+    newUser = User(name = data['name'], email = data['email'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email = data['email']).one()
