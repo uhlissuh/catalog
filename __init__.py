@@ -21,7 +21,8 @@ import requests
 
 
 #Connect to Database and create database session
-engine = create_engine('postgresql://catalog@127.0.0.1:5432/catalog')
+#'postgresql+psycopg2://user:password@hostname/database_name'
+engine = create_engine('postgresql+psycopg2://catalog@127.0.0.1:5432/catalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
