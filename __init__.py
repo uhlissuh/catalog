@@ -21,7 +21,7 @@ import requests
 
 
 #Connect to Database and create database session
-engine = create_engine('postgresql+psycopg2:///catalog')
+engine = create_engine('postgresql+psycopg2://catalog@localhost/catalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
