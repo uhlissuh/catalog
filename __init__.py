@@ -9,6 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from flask import session as login_session
 import random, string
 
+
 #stuff for oauth third party authentication
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -20,7 +21,7 @@ import requests
 
 
 #Connect to Database and create database session
-engine = create_engine('postgresql://catalog@52.70.75.58:5432/catalog')
+engine = create_engine('postgresql://catalog@127.0.0.1:5432/catalog')
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
