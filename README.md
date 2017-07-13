@@ -13,5 +13,3 @@ At the terminal, run
 ```sh
 python server.py
 ```
-
-The app will be running at http://127.0.0.1:8000/
